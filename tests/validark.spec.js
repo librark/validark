@@ -100,7 +100,6 @@ describe('validate', () => {
       {"place": "England", "year": 2021},
       {"place": "Japan", "year": 1970}
     ])
-
   })
 
   it('might use field aliases', () => {
@@ -120,7 +119,25 @@ describe('validate', () => {
       {"first_name": "Donald", "last_name": "Trump"},
       {"first_name": "Joseph", "last_name": "Biden"}
     ])
+  })
 
+  it('might use multiple field aliases', () => {
+    const schema = {
+      "*first_name:=name:=firstName": String,
+      "*last_name:=surName:=lastName": String
+    }
+
+    const records = [
+      {"first_name": "Donald", "name": "John", "surName": "Trump"},
+      {"firstName": "Joseph", "name": "Robinette", "lastName": "Biden"}
+    ]
+
+    const result = validate(schema, records)
+
+    expect(result).toEqual([
+      {"first_name": "Donald", "last_name": "Trump"},
+      {"first_name": "Robinette", "last_name": "Biden"}
+    ])
   })
 
   xit('throws error object values if received', () => {

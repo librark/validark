@@ -193,6 +193,33 @@ describe('validate', () => {
 
   })
 
+  it('validates arrays of objects and scalars', () => {
+    const schema = {
+        "levels": [String],
+        "addresses": [
+            {'*street': String, 'city': String}
+        ]
+    }
+
+    const records = [{
+        "levels": [1, 2, 3],
+        "addresses": [
+            {"street": '5th Ave 45', "city": "Popeland"},
+            {"street": '7th Street 67', "city": "Churchland"}
+        ]
+    }]
+
+    const [result] = validate(schema, records)
+
+    expect(result).toEqual({
+        "levels": ["1", "2", "3"],
+        "addresses": [
+            {"street": '5th Ave 45', "city": "Popeland"},
+            {"street": '7th Street 67', "city": "Churchland"}
+        ]
+    })
+  })
+
   xit('throws error object values if received', () => {
     const schema = {
       "*duration": (v) => v >= 0 && v <= 59 && v || 0,

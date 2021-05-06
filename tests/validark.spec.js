@@ -102,4 +102,47 @@ describe('validate', () => {
     ])
 
   })
+
+  it('might use field aliases', () => {
+    const schema = {
+      "*first_name:=firstName": String,
+      "*last_name:=lastName": String
+    }
+
+    const records = [
+      {"first_name": "Donald", "last_name": "Trump"},
+      {"firstName": "Joseph", "lastName": "Biden"}
+    ]
+
+    const result = validate(schema, records)
+
+    expect(result).toEqual([
+      {"first_name": "Donald", "last_name": "Trump"},
+      {"first_name": "Joseph", "last_name": "Biden"}
+    ])
+
+  })
+
+  xit('throws error object values if received', () => {
+    const schema = {
+      "*duration": (v) => v >= 0 && v <= 59 && v || 0,
+      "*contact": {
+        "*phone": String,
+        "email": (v) => v.contains('@') && v || new Error(
+          `Invalid email: "${v}"`)
+      }
+    }
+
+    const records = [{
+      "duration": 50,
+      "contact": {
+        "phone": 3456789,
+        "email": "blablabla"
+      }
+    }]
+
+    expect(() => validate(schema, records)).toThrow(
+      'Invalid field "email". Got "blablabla"')
+  })
+
 })

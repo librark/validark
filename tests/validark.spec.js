@@ -140,18 +140,71 @@ describe('validate', () => {
     ])
   })
 
+  it('might use nested schema objects', () => {
+    const schema = {
+      "*color": String,
+      "width": parseInt,
+      "height": parseInt,
+      "weight": parseFloat,
+      "duration": (v) => v >= 0 && v <= 59 && v || 0,
+      "*contact": {
+        "*phone": String,
+        "email": (v) => v.includes('@') && v || ''
+      }
+    }
+
+    const records = [{
+      "color": "red",
+      "width": 100,
+      "height": 300,
+      "duration": 50,
+      "contact": {
+        "phone": 3456789,
+        "email": "info@example.com"
+      }
+    }, {
+      "color": "blue",
+      "duration": 99,
+      "contact": {
+        "phone": 987654,
+        "email": "blablabla"
+      }
+    }]
+
+    const result = validate(schema, records)
+
+    expect(result).toEqual([{
+      "color": "red",
+      "width": 100,
+      "height": 300,
+      "duration": 50,
+      "contact": {
+        "phone": "3456789",
+        "email": "info@example.com"
+      }
+    }, {
+      "color": "blue",
+      "duration": 0,
+      "contact": {
+        "phone": "987654",
+        "email": ""
+      }
+    }])
+
+  })
+
   xit('throws error object values if received', () => {
     const schema = {
       "*duration": (v) => v >= 0 && v <= 59 && v || 0,
       "*contact": {
         "*phone": String,
-        "email": (v) => v.contains('@') && v || new Error(
-          `Invalid email: "${v}"`)
+        "email": (v) => v.includes('@') && v || new Error(
+      `Invalid email: "${v}"`)
       }
     }
 
     const records = [{
-      "duration": 50,
+    "duration": 50,
       "contact": {
         "phone": 3456789,
         "email": "blablabla"

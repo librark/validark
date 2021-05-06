@@ -190,48 +190,47 @@ describe('validate', () => {
         "email": ""
       }
     }])
-
   })
 
   it('validates arrays of objects and scalars', () => {
     const schema = {
-        "levels": [String],
-        "addresses": [
-            {'*street': String, 'city': String}
-        ]
+      "levels": [String],
+      "addresses": [
+        {'*street': String, 'city': String}
+      ]
     }
 
     const records = [{
-        "levels": [1, 2, 3],
-        "addresses": [
-            {"street": '5th Ave 45', "city": "Popeland"},
-            {"street": '7th Street 67', "city": "Churchland"}
-        ]
+      "levels": [1, 2, 3],
+      "addresses": [
+        {"street": '5th Ave 45', "city": "Popeland"},
+        {"street": '7th Street 67', "city": "Churchland"}
+      ]
     }]
 
     const [result] = validate(schema, records)
 
     expect(result).toEqual({
-        "levels": ["1", "2", "3"],
-        "addresses": [
-            {"street": '5th Ave 45', "city": "Popeland"},
-            {"street": '7th Street 67', "city": "Churchland"}
-        ]
+      "levels": ["1", "2", "3"],
+      "addresses": [
+        {"street": '5th Ave 45', "city": "Popeland"},
+        {"street": '7th Street 67', "city": "Churchland"}
+      ]
     })
   })
 
-  xit('throws error object values if received', () => {
+  it('throws error object values if received', () => {
     const schema = {
       "*duration": (v) => v >= 0 && v <= 59 && v || 0,
       "*contact": {
         "*phone": String,
         "email": (v) => v.includes('@') && v || new Error(
-      `Invalid email: "${v}"`)
+      `Invalid field "email". Got "${v}".`)
       }
     }
 
     const records = [{
-    "duration": 50,
+      "duration": 50,
       "contact": {
         "phone": 3456789,
         "email": "blablabla"
@@ -239,7 +238,7 @@ describe('validate', () => {
     }]
 
     expect(() => validate(schema, records)).toThrow(
-      'Invalid field "email". Got "blablabla"')
+      'Invalid field "email". Got "blablabla".')
   })
 
 })

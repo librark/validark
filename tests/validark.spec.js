@@ -82,4 +82,24 @@ describe('validate', () => {
       "name": "John", "age": 56.5
     })
   })
+
+  it('might use lambda validation function', () => {
+    const schema = {
+      "*place": String,
+      "year": (v) => (v > 1920 && v < 2030) && v || 1970
+    }
+
+    const records = [
+      {"place": "England", "year": 2021},
+      {"place": "Japan", "year": 2050}
+    ]
+
+    const result = validate(schema, records)
+
+    expect(result).toEqual([
+      {"place": "England", "year": 2021},
+      {"place": "Japan", "year": 1970}
+    ])
+
+  })
 })

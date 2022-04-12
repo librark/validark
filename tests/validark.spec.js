@@ -66,6 +66,22 @@ describe('validate', () => {
       'The field "quantity" must be a number. Got "XYZ".')
   })
 
+  it('throws on null, undefined or non array values', () => {
+    const schema = {
+      "quantity": parseInt,
+      "price": parseFloat
+    }
+
+    expect(() => validate(schema, null)).toThrow(
+      'The "records" parameter must be an array.')
+    expect(() => validate(schema, undefined)).toThrow(
+      'The "records" parameter must be an array.')
+    expect(() => validate(schema, 'LaLaLa')).toThrow(
+      'The "records" parameter must be an array.')
+    expect(() => validate(schema, 123)).toThrow(
+      'The "records" parameter must be an array.')
+  })
+
   it('ignores unused optional schema fields', () => {
     const schema = {
       "name": String,

@@ -66,7 +66,7 @@ describe('validate', () => {
       'The field "quantity" must be a number. Got "XYZ".')
   })
 
-  it('throws on null, undefined or non array values', () => {
+  it('throws on null, undefined or non array records', () => {
     const schema = {
       "quantity": parseInt,
       "price": parseFloat
@@ -80,6 +80,29 @@ describe('validate', () => {
       'The "records" parameter must be an array.')
     expect(() => validate(schema, 123)).toThrow(
       'The "records" parameter must be an array.')
+  })
+
+  it('throws if a record is not an object', () => {
+    const schema = {
+      "quantity": parseInt,
+      "price": parseFloat
+    }
+
+    let records = [{"name": "John", "age": 56.5}, null]
+    expect(() => validate(schema, records)).toThrow(
+      'Record "1" is not an object. Got "null".')
+
+    records = [{"name": "John", "age": 56.5}, undefined]
+    expect(() => validate(schema, records)).toThrow(
+      'Record "1" is not an object. Got "undefined".')
+
+    records = [123, {"name": "John", "age": 56.5}]
+    expect(() => validate(schema, records)).toThrow(
+      'Record "0" is not an object. Got "123".')
+
+    records = [{}, {}, 'Hello']
+    expect(() => validate(schema, records)).toThrow(
+      'Record "2" is not an object. Got "Hello".')
   })
 
   it('ignores unused optional schema fields', () => {

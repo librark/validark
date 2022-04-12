@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "Simple Data Validation Library",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' npx jest --coverage"
   },
   "repository": {
     "type": "git",

@@ -213,3 +213,18 @@ container object.
     const value =  grab(object, 'missing', 777)
 
     console.assert(value === 777)
+
+The *grab()* function can also receive a *Class* as its key argument. In that
+case, an instance of such class will be tried to be obtained from the provided
+object container. The name of the key wold be either the name of the class in
+camelCase or just its unaltered string name.
+
+    class Alpha {}
+
+    const object = {
+      alpha: new Alpha()
+    }
+
+    const value = grab(object, Alpha)
+
+    console.assert(value instanceof Alpha)

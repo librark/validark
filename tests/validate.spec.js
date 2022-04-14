@@ -1,4 +1,4 @@
-import { validate } from '../lib/validark.js'
+import { validate } from '../lib/validate.js'
 
 describe('validate', () => {
   it('validates simple data', () => {

@@ -176,3 +176,40 @@ Or called without arguments:
     }
 
     console.assert(message === "check failed.")
+
+### grab
+
+The *grab()* retrieves a key from an object.
+
+    const object = {
+      element: 'content'
+    }
+
+    const result = grab(object, 'element')
+
+    console.assert(result === "content")
+
+It errors out if the key is not found in the object.
+
+    const object = {
+      element: 'content'
+    }
+
+    try {
+      grab(object, 'missing')
+    } catch (error) {
+      const message = String(error)
+    }
+
+    console.assert(message === 'Key "missing" not found')
+
+It can also provide a *fallback* value in case the key is not found in the
+container object.
+
+    const object = {
+      element: 'content'
+    }
+
+    const value =  grab(object, 'missing', 777)
+
+    console.assert(value === 777)

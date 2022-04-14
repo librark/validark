@@ -134,3 +134,45 @@ inside an array**:
             {"street": '7th Street 67', "city": "Churchland"}
         ]
     })
+
+## Utilities
+
+Validark includes several utility functions to simplify common validation
+scenarios.
+
+### check
+
+The *check()* function behaves similarly to the *assert()* function in NodeJS.
+However, this function is provided as a convenient multi-environment utility.
+*check()* returns the provided value if it is *truthy*.
+
+    const value = 'Truthy Value'
+
+    const result = check(value)
+
+    const [result] = validate(schema, records)
+
+    console.assert(result === value)
+
+In the other hand, if the value provided to check is *falsy*, it raises an
+error with the optional provided message.
+
+    const value = undefined
+
+    try {
+      check(value, 'Invalid Value!')
+    } catch (error) {
+      const message = String(error)
+    }
+
+    console.assert(message === "check failed. Invalid Value!")
+
+Or called without arguments:
+
+    try {
+      check()
+    } catch (error) {
+      const message = String(error)
+    }
+
+    console.assert(message === "check failed.")

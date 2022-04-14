@@ -13,11 +13,11 @@ describe('check', () => {
     const value = undefined
     const message = 'Invalid value!'
 
-    expect(() => check(value, message)).toThrow(`check failed. ${message}`)
+    expect(() => check(value, message)).toThrow(message)
   })
 
   it('throws if called without arguments', () => {
-    expect(() => check()).toThrow('check failed.')
+    expect(() => check()).toThrow('')
   })
 })
 
@@ -45,12 +45,12 @@ describe('grab', () => {
     const container = 1
 
     expect(() => grab(container)).toThrow(
-      'Argument "container" must be an object. Got "1"')
+      'Container must be an object. Got "1"')
   })
 
   it('throws if called without arguments', () => {
     expect(() => grab()).toThrow(
-      'Argument "container" must be an object. Got "null"')
+      'Container must be an object. Got "null"')
   })
 
   it('provides a default value if the key is not found', () => {

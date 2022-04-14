@@ -48,7 +48,7 @@ describe('grab', () => {
 
     const object = {
       alpha: new Alpha(),
-      beta: new Beta()
+      Beta: new Beta()
     }
 
     let value = grab(object, Alpha)

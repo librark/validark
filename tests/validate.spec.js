@@ -247,6 +247,7 @@ describe('validate', () => {
       ]
     }]
 
+    validate(schema, records)
     const [result] = validate(schema, records)
 
     expect(result).toEqual({

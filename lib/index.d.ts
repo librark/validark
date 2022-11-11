@@ -18,26 +18,26 @@ export declare function outdent(
 
 export declare function grab<Type>(
   container: object,
-  key: typeof Type,
+  key: new() => Type,
   fallback: Type
 ): Type
 export declare function grab(
   container: object,
   key: string,
   fallback: unknown
-): object
+): unknown
 
 export declare function stringify(
   structure: object,
-  format: string = '',
-  options: object = null
+  format?: string,
+  options?: object
 ): string
 
 export declare function validate(
   schema: object,
-  records: object
-): object
-export declare function validate(
-  schema: object,
   records: object[]
 ): object[]
+export declare function validate(
+  schema: object,
+  records: object
+): object

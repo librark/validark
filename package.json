@@ -21,18 +21,6 @@
     "url": "https://github.com/knowark/validarkjs/issues"
   },
   "homepage": "https://github.com/knowark/validarkjs#readme",
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ]
-    ]
-  },
   "standard": {
     "env": [
       "jest"
@@ -40,16 +28,17 @@
   },
   "jest": {
     "verbose": true,
+    "transform": {},
     "clearMocks": true,
     "coverageDirectory": "coverage",
     "collectCoverageFrom": [
       "**/lib/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      ".d.ts"
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
-    "@babel/preset-env": "^7.14.1",
-    "babel-jest": "^26.6.3",
     "jest": "^26.6.3"
   }
 }

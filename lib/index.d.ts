@@ -1,7 +1,10 @@
 export declare function check<Type>(
-  value: Type,
-  message: string
+  value: unknown,
+  type: new() => Type
 ): Type
+export declare function check(
+  value: unknown,
+): unknown
 
 export declare function format(
   template: string,
@@ -17,14 +20,14 @@ export declare function outdent(
 ): string
 
 export declare function grab<Type>(
-  container: object,
+  container: unknown,
   key: new() => Type,
-  fallback: Type
+  fallback?: Type
 ): Type
 export declare function grab(
-  container: object,
+  container: unknown,
   key: string,
-  fallback: unknown
+  fallback?: unknown
 ): unknown
 
 export declare function stringify(

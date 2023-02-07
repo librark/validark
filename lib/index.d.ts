@@ -1,3 +1,14 @@
+export declare class Storer {
+  get (key: string): Promise<{value?: any, expiration?: number}>
+
+  set (key: string, content: {value: any, expiration?: number}): Promise<void>
+}
+export declare function cache<Type>(
+  target: Type,
+  storer: Storer,
+  lifetime: number
+): Type
+
 export declare function check<Type>(
   value: unknown,
   type: new() => Type

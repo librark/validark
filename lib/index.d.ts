@@ -1,11 +1,11 @@
-export declare class Storer {
+export declare class Cacher {
   get (key: string): Promise<{value?: any, expiration?: number}>
 
   set (key: string, content: {value: any, expiration?: number}): Promise<void>
 }
 export declare function cache<Type>(
   target: Type,
-  storer: Storer,
+  storer: Cacher,
   lifetime: number
 ): Type
 

@@ -5,8 +5,11 @@ export declare class Cacher {
 }
 export declare function cache<Type>(
   target: Type,
-  storer: Cacher,
-  lifetime: number
+  options: {
+    cacher?: Cacher,
+    lifetime?: number,
+    methods?: string[]
+  }
 ): Type
 
 export declare function check<Type>(

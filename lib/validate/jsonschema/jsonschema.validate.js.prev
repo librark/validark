@@ -1,0 +1,43 @@
+/** @param {Object} schema
+ * @param {Array[Object] | Object} instance
+ * @return {boolean}
+ * */
+export function validateJsonSchema (schema, instance) {
+  if (schema?.constructor === Boolean) return schema
+
+
+
+
+  const types = [schema.type].flat()
+  const primitives = {
+    'integer': (value) => Number.isInteger(value),
+    'number': (value) => value?.constructor === Number,
+    'string': (value) => value?.constructor === String,
+    'boolean': (value) => value?.constructor === Boolean,
+    'null': (value) => value === null,
+  }
+
+  let isPrimitive = false
+  if (types.every(type => Object.keys(primitives).includes(type))) {
+    isPrimitive = types.some(type => primitives[type](instance))
+  }
+
+  const isArray = Array.isArray(instance)
+
+  if (schema.type === 'array' && isArray) return true
+
+  if (!schema.properties) return isPrimitive
+
+  //if (isPrimitive || Array.isArray(instance)) return true
+
+  const results = []
+  const properties = schema?.properties
+  for (const [property, subSchema] of Object.entries(properties || {})) {
+    const value = instance[property]
+    if (value === undefined) continue
+    //if (value?.constructor === Array) continue
+    results.push(validateJsonSchema(subSchema, instance[property]))
+  }
+
+  return results.every(Boolean)
+}

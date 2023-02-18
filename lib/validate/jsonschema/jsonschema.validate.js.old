@@ -1,0 +1,115 @@
+/** @param {Object} schema
+ * @param {Array[Object] | Object} instance
+ * @return {boolean}
+ * */
+export function validateJsonSchema (schema, instance) {
+  if (schema?.constructor === Boolean) return schema
+
+  const numbers = ['integer', 'number']
+  const primitives = [...numbers, 'string', 'boolean', 'null']
+
+  const instanceType = getType(instance)
+  const schemaTypes = [schema.type || []].flat()
+
+  if (schema.pattern) {
+    if (instanceType !== 'string') return true
+    return new RegExp(schema.pattern).test(instance)
+  }
+
+  if (schema.maxItems) {
+    if (instanceType !== 'array') return true
+    if (instance.length > schema.maxItems) return false
+  }
+
+  if (schema.minItems) {
+    if (instanceType !== 'array') return true
+    if (instance.length < schema.minItems) return false
+  }
+
+  if (schema.maximum) {
+    if (!numbers.includes(instanceType)) return true
+    if (instance <= schema.maximum) return true
+  }
+
+  if (schema.minimum) {
+    if (!numbers.includes(instanceType)) return true
+    if (instance >= schema.minimum) return true
+  }
+
+  if (primitives.includes(instanceType) && !schema.properties) {
+    if (instanceType === 'integer' && schemaTypes.includes('number')) {
+      schemaTypes.push('integer')
+    }
+    return schemaTypes.includes(instanceType)
+  }
+
+  if (schemaTypes.length && !schemaTypes.includes(instanceType)) return false
+
+  if (['array', ...primitives].includes(instanceType)) return true
+
+  const schemaProperties = schema?.properties || {}
+  
+  const schemaPropertyKeys = Object.keys(schemaProperties) 
+  const instancePropertyKeys = Object.keys(instance) 
+
+  const intersectionProperties = schemaPropertyKeys.filter(
+    key => instancePropertyKeys.includes(key))
+
+  const patternProperties = schema?.patternProperties || {}
+
+
+  if (!intersectionProperties.length && !schema.additionalProperties &&
+    !schema.patternProperties) {
+    return true
+  }
+
+  if (JSON.stringify(instance) === JSON.stringify({ foo: 'bar', fooooo: 2 })) {
+    console.log('---------- patternProperties::::',
+    'schema::', schema, 'instance::', instance)
+  }
+
+
+  const results = []
+  for (const key of intersectionProperties) {
+    results.push(validateJsonSchema(schemaProperties[key], instance[key]))
+  }
+
+  const differenceProperties = instancePropertyKeys.filter(
+    key => !schemaPropertyKeys.includes(key))
+
+  const additionalProperties = schema?.additionalProperties || {}
+  for (const key of differenceProperties) {
+    results.push(validateJsonSchema(additionalProperties, instance[key]))
+  }
+
+
+  for (const [pattern, patternSchema] of Object.entries(patternProperties)) {
+    //console.log('pattern>>>', patternProperties)
+    const matchedKeys = instancePropertyKeys.filter(
+      key => new RegExp(pattern).test(key)) 
+
+    //console.log('Matched Keys::::', matchedKeys, 'INSTANCE::', instance)
+    results.concat(matchedKeys.map(key => {
+
+      //console.log('INSTANCE', instance, 'INST_KEY:::', key, 'PAT_SCHEMA', patternSchema)
+      //
+      return validateJsonSchema(patternSchema, instance[key])
+    }
+
+    ))
+
+  }
+
+
+  return results.every(Boolean)
+}
+
+const getType = (instance) => {
+  if (instance?.constructor === String) return 'string'
+  if (Number.isInteger(instance)) return 'integer'
+  if (instance?.constructor === Number) return 'number'
+  if (instance?.constructor === Boolean) return 'boolean'
+  if (instance?.constructor === Array) return 'array'
+  if (instance?.constructor === Object) return 'object'
+  if (instance === null) return 'null'
+}

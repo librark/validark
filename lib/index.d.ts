@@ -53,9 +53,15 @@ export declare function stringify(
 
 export declare function validate(
   schema: object,
-  records: object[]
+  instance: object[],
+  options?: {
+    dialect?: string
+  }
 ): object[]
 export declare function validate(
   schema: object,
-  records: object
+  instance: object,
+  options?: {
+    dialect?: string
+  }
 ): object

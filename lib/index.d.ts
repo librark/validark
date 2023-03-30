@@ -51,6 +51,10 @@ export declare function stringify(
   options?: object
 ): string
 
+export declare function structure(
+  object: object,
+): object
+
 export declare function validate(
   schema: object,
   instance: object[],

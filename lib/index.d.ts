@@ -21,6 +21,11 @@ export declare function check(
   value: unknown,
 ): unknown
 
+export declare function need<Type>(
+  type: new() => Type,
+  fallback?: Type,
+): Type
+
 export declare function format(
   template: string,
   variables: object

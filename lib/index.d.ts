@@ -62,15 +62,15 @@ export declare function structure(
 
 export declare function validate(
   schema: object,
-  instance: object[],
+  instance: any[],
   options?: {
     dialect?: string
   }
-): object[]
+): any[]
 export declare function validate(
   schema: object,
-  instance: object,
+  instance: any,
   options?: {
     dialect?: string
   }
-): object
+): any

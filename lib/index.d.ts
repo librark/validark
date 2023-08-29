@@ -66,11 +66,11 @@ export declare function validate(
   options?: {
     dialect?: string
   }
-): any[]
+): object[]
 export declare function validate(
   schema: object,
   instance: any,
   options?: {
     dialect?: string
   }
-): any
+): object

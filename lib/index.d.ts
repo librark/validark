@@ -74,3 +74,8 @@ export declare function validate(
     dialect?: string
   }
 ): any
+
+export declare function merge(
+  first: object,
+  second: object,
+): object

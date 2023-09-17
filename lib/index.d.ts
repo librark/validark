@@ -58,6 +58,11 @@ export declare function grab(
   fallback?: unknown
 ): unknown
 
+export declare function has<Type>(
+  instance: Type,
+  properties: string | string[]
+): Type
+
 export declare function stringify(
   structure: object,
   format?: string,

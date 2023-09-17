@@ -1,3 +1,11 @@
+export declare abstract class Abstract {
+  protected abstract<Type>(
+    parameters: {[key: string]: any} | any[],
+    returnType: new() => Type): Type
+  protected abstract(
+    parameters: {[key: string]: any} | any[]): void
+}
+
 export declare class Cacher {
   get (key: string): Promise<{value?: any, expiration?: number}>
 

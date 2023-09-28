@@ -92,3 +92,20 @@ export declare function merge(
   first: object,
   second: object,
 ): object
+
+export declare abstract class Interactor {
+  schema: {
+    input: object,
+    output: object
+  }
+
+  constructor (dependencies?: { validator: Function })
+
+  execute (input: object): Promise<object>
+
+  abstract perform (input: object): Promise<object>
+}
+
+export declare abstract class Query extends Interactor {
+  properties?: object
+}

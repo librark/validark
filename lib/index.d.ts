@@ -95,8 +95,8 @@ export declare function merge(
 
 export declare abstract class Interactor {
   schema: {
-    input: object,
-    output: object
+    input?: object,
+    output?: object
   }
 
   constructor (dependencies?: { validator: Function })

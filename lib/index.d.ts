@@ -103,7 +103,7 @@ export declare abstract class Interactor {
 
   execute (input: object): Promise<object>
 
-  abstract perform (input: object): Promise<object>
+  perform (input: object): Promise<object>
 }
 
 export declare abstract class Query extends Interactor {

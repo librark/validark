@@ -1,3 +1,14 @@
+<p align="center">
+  <a href="https://codecov.io/gh/librark/validark">
+    <img src="https://codecov.io/gh/librark/validark/graph/badge.svg?token=Ad3rGVvNuu"/>
+  </a>
+</p>
+<p align="center">
+  <a href="https://codecov.io/gh/librark/validark">
+    <img src="https://codecov.io/gh/librark/validark/graphs/sunburst.svg?token=Ad3rGVvNuu"/>
+  </a>
+</p>
+
 # Validarkjs
 
 Simple Data Validation Library

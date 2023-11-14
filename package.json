@@ -35,7 +35,8 @@
       "**/lib/**"
     ],
     "coveragePathIgnorePatterns": [
-      ".d.ts"
+      ".d.ts",
+      "**/__tests__/**"
     ]
   },
   "devDependencies": {

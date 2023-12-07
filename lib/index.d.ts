@@ -1,7 +1,7 @@
 export declare abstract class Abstract {
   protected abstract<Type>(
     parameters: {[key: string]: any} | any[],
-    returnType: new() => Type): Type
+    returnType: new(...args: any[]) => Type): Type
   protected abstract(
     parameters: {[key: string]: any} | any[]): void
 }
@@ -23,14 +23,14 @@ export declare function cache<Type>(
 
 export declare function check<Type>(
   value: unknown,
-  type: new() => Type
+  type: new(...args: any[]) => Type
 ): Type
 export declare function check(
   value: unknown,
 ): unknown
 
 export declare function need<Type>(
-  type: new() => Type,
+  type: new(...args: any[]) => Type,
   fallback?: Type,
 ): Type
 
@@ -49,7 +49,7 @@ export declare function outdent(
 
 export declare function grab<Type>(
   container: unknown,
-  key: new() => Type,
+  key: new(...args: any[]) => Type,
   fallback?: Type
 ): Type
 export declare function grab(

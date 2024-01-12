@@ -23,10 +23,17 @@ export declare function cache<Type>(
 
 export declare function check<Type>(
   value: unknown,
-  type: new(...args: any[]) => Type
+  options: {
+    type: new(...args: any[]) => Type,
+    message?: string
+  }
 ): Type
 export declare function check(
   value: unknown,
+  options?: {
+    type?: string,
+    message?: string
+  }
 ): unknown
 
 export declare function need<Type>(

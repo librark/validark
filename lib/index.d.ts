@@ -77,14 +77,16 @@ export declare function validate(
   schema: object,
   instance: any[],
   options?: {
-    dialect?: string
+    dialect?: string,
+    strict?: boolean
   }
 ): any[]
 export declare function validate(
   schema: object,
   instance: any,
   options?: {
-    dialect?: string
+    dialect?: string,
+    strict?: boolean
   }
 ): any
 

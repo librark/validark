@@ -104,15 +104,15 @@ export declare function merge(
 
 export declare abstract class Interactor {
   schema: {
-    input?: object,
-    output?: object
+    input?: any,
+    output?: any
   }
 
-  constructor (dependencies?: { validator: Function })
+  constructor (dependencies?: { validator?: Function })
 
-  execute (input: object): Promise<object>
+  execute (input?: any): Promise<any>
 
-  perform (input: object): Promise<object>
+  perform (input?: any): Promise<any>
 }
 
 export declare abstract class Query extends Interactor {

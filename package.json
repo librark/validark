@@ -1,6 +1,6 @@
 {
   "name": "@knowark/validarkjs",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "Simple Data Validation Library",
   "main": "lib/index.js",
   "type": "module",

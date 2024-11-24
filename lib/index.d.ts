@@ -36,6 +36,10 @@ export declare function check(
   }
 ): unknown
 
+export declare function fallible<Type>(
+  promise: Promise<Type>,
+): Promise<[Error?, Type?]>
+
 export declare function need<Type>(
   type: new(...args: any[]) => Type,
   fallback?: Type,

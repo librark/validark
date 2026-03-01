@@ -90,7 +90,8 @@ export declare function validate(
   instance: any[],
   options?: {
     dialect?: string,
-    strict?: boolean
+    strict?: boolean,
+    abortEarly?: boolean
   }
 ): any[]
 export declare function validate(
@@ -98,7 +99,8 @@ export declare function validate(
   instance: any,
   options?: {
     dialect?: string,
-    strict?: boolean
+    strict?: boolean,
+    abortEarly?: boolean
   }
 ): any
 

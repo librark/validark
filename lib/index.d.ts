@@ -81,7 +81,8 @@ export declare function stringify(
 ): string
 
 export declare function structure(
-  object: object,
+  object: object | string,
+  format?: string
 ): object
 
 export declare function validate(

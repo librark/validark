@@ -11,231 +11,299 @@
 
 # Validarkjs
 
-Simple Data Validation Library
+Simple data validation and utility library.
 
-## Usage
+## Installation
 
-Call the **validate** method with the required *schema* and the *records*
-to be validated:
+```bash
+npm install @knowark/validarkjs
+```
 
-    import { validate } from validark
+## Exports
 
-    const schema = {
-        "*name": String,
-        "age": parseInt
-    }
+```js
+import {
+  Abstract,
+  Interactor,
+  Query,
+  cache,
+  Cacher,
+  check,
+  fallible,
+  format,
+  dedent,
+  outdent,
+  grab,
+  has,
+  merge,
+  need,
+  stringify,
+  structure,
+  validate
+} from '@knowark/validarkjs'
+```
 
-    const records = [{
-        "name": "Pepito Pérez",
-        "age": 64
-    }]
+## Validation
 
-    const [result] = validate(schema, records)
+Use `validate(schema, instance, options?)` to validate and transform data.
 
-    console.assert(result === value)
+```js
+import { validate } from '@knowark/validarkjs'
 
+const schema = {
+  '*name': String,
+  age: parseInt
+}
 
-Schemas are just objects whose keys are strings and whose records are
-validation callables, objects or arrays. e.g.:
+const result = validate(schema, { name: 'Ada', age: '37' })
+// { name: 'Ada', age: 37 }
+```
 
-    const schema = {
-        "color": String,
-        "width": parseInt,
-        "height": parseInt,
-        "weight": parseFloat,
-        "duration": (v) => (v >= 0 && v <= 59) && v || 0
-        "contact": {
-            "phone": String,
-            "email": (v) => v.contains('@') && v || ''
-        }
-    }
+### Schema rules
 
-**Validation callables** must receive their keys' corresponding input value and
-return the final value that will be assigned to such key. If an **Error**
-is received, it will be thrown:
+- Schema values can be:
+  - validation functions (for scalars)
+  - nested schema objects
+  - arrays with one validator/schema for item validation
+- Prefix a key with `*` to make it required.
+- Use `:=` to define aliases. The output key is the left-most alias.
+- Alias matching is evaluated right-to-left when multiple aliases are present.
 
-    const schema = {
-        "name": String,
-        "age": (v) => (v > 0 && v < 130) && v || new Error("Invalid Age!")
-    }
+```js
+const schema = {
+  '*first_name:=firstname:=firstName': String,
+  '*score:=totalScore:=points': parseInt,
+  contact: {
+    '*email': String
+  },
+  tags: [String],
+  addresses: [{ '*street': String, city: String }]
+}
+```
 
-    const message = None
+### Options
 
-    try {
-        const records = [{"name": "John Doe", "age": 200}]
-        const [result] = validate(schema, records)
-    } catch (error) {
-        const message = String(error)
-    }
+`validate(..., options)` supports:
 
-    console.assert(message === "Error: Invalid Age!")
+- `strict` (`boolean`, default `false`):
+  - `false`: unknown properties are ignored
+  - `true`: unknown properties are reported as errors
+- `eager` (`boolean`, default `false`):
+  - `false`: collect all issues and throw one aggregate error
+  - `true`: throw on the first issue found
+- `dialect` (`string`):
+  - `'jsonschema'`: use the JSON Schema validator instead of default function-schema validation
 
-Mandatory fields can be marked with an **asterix (*)** as key prefix:
+### JSON Schema dialect
 
-    const schema = {
-        "title": String,
-        "*firstname": String,
-        "*surname": String,
-    }
+When `dialect: 'jsonschema'` is used, `validate()` validates against a JSON Schema
+and returns the original instance (without value transformation).
 
-Aliases can be delimited with **:=**. The final key will be the leftmost entry:
+```js
+const schema = {
+  type: 'object',
+  properties: { age: { type: 'number' } }
+}
 
-    const schema = {
-        "*first_name:=firstname:=firstName": String,
-        "*last_name:=lastname:=lastName": String
-    }
+validate(schema, { age: 33 }, { dialect: 'jsonschema' })
+// { age: 33 }
+```
 
-    const records = [
-        {"firstName": "Clark", "lastName": "Kent"},
-        {"firstname": "Peter", "lastname": "Parker"},
-        {"first_name": "Bruce", "last_name": "Wayne"}
-    ]
+### Error behavior
 
-    const result = validate(schema, records)
+Default mode is non-eager (`eager: false`), so all issues are collected.
 
-    console.assert(result === [
-        {"first_name": "Clark", "last_name": "Kent"},
-        {"first_name": "Peter", "last_name": "Parker"},
-        {"first_name": "Bruce", "last_name": "Wayne"}
-    ])
+```js
+const schema = { '*name': String, '*age': parseInt }
 
-Extra keys in the records' entries are ignored and aliases definitions are
-processed from right to left if there are multiple matches:
+try {
+  validate(schema, [{ age: 'young' }])
+} catch (error) {
+  // error is AggregateError
+  // error.name === 'ValidationError'
+  // error.issues is an array of issue objects
+  console.log(error.message)
+}
+```
 
-    const schema = {
-        "*name": String,
-        "*player_id:=playerId": String,
-        "*score:=totalScore:=points": parseInt
-    }
+Use eager mode to fail fast:
 
-    const records = [
-        {"name": "James", "playerId": "007", "totalScore": 99, "points": 55}
-    ]
+```js
+validate(schema, [{ age: 'young' }], { eager: true })
+// throws first validation error
+```
 
-    const [result] = validate(schema, records)
+Validation functions can:
 
-    console.assert(result === {
-        "name": "James", "player_id": "007", "score": 99
-    })
+- return transformed values
+- return an `Error` object
+- throw an `Error`
 
-Sequences of items might be handled by defining the **validation function
-inside an array**:
+In non-eager mode, returned/thrown errors are included in the collected issues.
 
-    const schema = {
-        "levels": [String],
-        "addresses": [
-            {'*street': String, 'city': String}
-        ]
-    }
+### Arrays and nested schemas
 
-    const records = [{
-        "levels": [1, 2, 3],
-        "addresses": [
-            {"street": '5th Ave 45', "city": "Popeland"},
-            {"street": '7th Street 67', "city": "Churchland"}
-        ]
-    }]
+```js
+const schema = {
+  levels: [parseInt],
+  contact: {
+    '*phone': String
+  }
+}
 
-    const [result] = validate(schema, records)
-
-    console.assert(result === {
-        "levels": ["1", "2", "3"],
-        "addresses": [
-            {"street": '5th Ave 45', "city": "Popeland"},
-            {"street": '7th Street 67', "city": "Churchland"}
-        ]
-    })
+const records = [{ levels: ['1', '2'], contact: { phone: 123456 } }]
+const [result] = validate(schema, records)
+// { levels: [1, 2], contact: { phone: '123456' } }
+```
 
 ## Utilities
 
-Validark includes several utility functions to simplify common validation
-scenarios.
+### `check(value, options?)`
 
-### check
+- Returns `value` if valid.
+- Throws `CheckError` if value is falsy.
+- If `options.type` is provided, validates that type.
 
-The *check()* function behaves similarly to the *assert()* function in NodeJS.
-However, this function is provided as a convenient multi-environment utility.
-*check()* returns the provided value if it is *truthy*.
+```js
+import { check } from '@knowark/validarkjs'
 
-    const value = 'Truthy Value'
+check('ok')
+check(42, { type: Number })
+```
 
-    const result = check(value)
+### `grab(container, key, fallback?)`
 
-    const [result] = validate(schema, records)
+Retrieves a value from an object.
 
-    console.assert(result === value)
+- `key` can be a string
+- `key` can be a class constructor (tries `camelCaseName` then `ClassName`)
+- `key` can be `[name, Class]`
 
-In the other hand, if the value provided to check is *falsy*, it raises an
-error with the optional provided message.
+```js
+import { grab } from '@knowark/validarkjs'
 
-    const value = undefined
+const value = grab({ element: 'content' }, 'element')
+const fallback = grab({}, 'missing', 777)
+```
 
-    try {
-      check(value, 'Invalid Value!')
-    } catch (error) {
-      const message = String(error)
-    }
+### `has(instance, properties)`
 
-    console.assert(message === "check failed. Invalid Value!")
+Ensures the instance has the requested truthy properties.
 
-Or called without arguments:
+```js
+import { has } from '@knowark/validarkjs'
 
-    try {
-      check()
-    } catch (error) {
-      const message = String(error)
-    }
+has({ name: 'Ada', age: 37 }, ['name', 'age'])
+```
 
-    console.assert(message === "check failed.")
+### `need(type, fallback)`
 
-### grab
+Returns `fallback` if it matches the expected type, otherwise throws `NeedError`.
 
-The *grab()* retrieves a key from an object.
+```js
+import { need } from '@knowark/validarkjs'
 
-    const object = {
-      element: 'content'
-    }
+const value = need(String, 'default')
+```
 
-    const result = grab(object, 'element')
+### `fallible(promise)`
 
-    console.assert(result === "content")
+Wraps a promise and returns `[error, result]`.
 
-It errors out if the key is not found in the object.
+```js
+import { fallible } from '@knowark/validarkjs'
 
-    const object = {
-      element: 'content'
-    }
+const [error, result] = await fallible(Promise.resolve(123))
+```
 
-    try {
-      grab(object, 'missing')
-    } catch (error) {
-      const message = String(error)
-    }
+### `merge(first, second)`
 
-    console.assert(message === 'Key "missing" not found')
+Deep-merges plain object branches recursively.
 
-It can also provide a *fallback* value in case the key is not found in the
-container object.
+```js
+import { merge } from '@knowark/validarkjs'
 
-    const object = {
-      element: 'content'
-    }
+const merged = merge({ a: 1, b: { c: 2 } }, { b: { d: 3 } })
+// { a: 1, b: { c: 2, d: 3 } }
+```
 
-    const value =  grab(object, 'missing', 777)
+### `format`, `dedent`, `outdent`
 
-    console.assert(value === 777)
+```js
+import { format, dedent, outdent } from '@knowark/validarkjs'
 
-The *grab()* function can also receive a *Class* as its key argument. In that
-case, an instance of such class will be tried to be obtained from the provided
-object container. The name of the key wold be either the name of the class in
-camelCase or just its unaltered string name.
+format('${name} is ${age}', { name: 'Ada', age: 37 })
+dedent('  a\n    b')
+outdent('    a\n    b')
+```
 
-    class Alpha {}
+### `stringify(structure, format?)`
 
-    const object = {
-      alpha: new Alpha()
-    }
+- default: `String(structure)`
+- `'json'`: `JSON.stringify`
+- `'graphql'` / `'gql'`: GraphQL-like serialization
 
-    const value = grab(object, Alpha)
+```js
+import { stringify } from '@knowark/validarkjs'
 
-    console.assert(value instanceof Alpha)
+stringify({ hello: 'world' }, 'json')
+```
+
+### `structure(object, format?)`
+
+- Clones JS objects/arrays into plain data
+- Parses GraphQL source strings into structure objects when format is `'graphql'`/`'gql'`, or when source starts with `query`, `mutation`, or `subscription`
+
+```js
+import { structure } from '@knowark/validarkjs'
+
+const data = structure({ a: 1 })
+```
+
+### `cache(target, options?)`
+
+Caches async function/object method results.
+
+- Works for async functions and async object methods
+- Supports `size`, `lifetime`, `methods`, and custom `cacher`
+- Exposes `Cacher` abstract interface
+
+```js
+import { cache } from '@knowark/validarkjs'
+
+const cachedFetch = cache(async (id) => ({ id }))
+await cachedFetch(1)
+```
+
+## OOP helpers
+
+### `Abstract`
+
+Base class for abstract hierarchies. Prevents direct instantiation and provides `abstract(...)` helper.
+
+### `Interactor`
+
+Use for input/output validated workflows.
+
+```js
+import { Interactor } from '@knowark/validarkjs'
+
+class CreateUser extends Interactor {
+  schema = {
+    input: { '*name': String },
+    output: { '*id': String, '*name': String }
+  }
+
+  async perform (input) {
+    return { id: 'u1', name: input.name }
+  }
+}
+```
+
+### `Query`
+
+Specialized `Interactor` with a `properties` attribute defaulting to `null`.
+
+## License
+
+MIT

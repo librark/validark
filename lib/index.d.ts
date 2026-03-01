@@ -91,7 +91,7 @@ export declare function validate(
   options?: {
     dialect?: string,
     strict?: boolean,
-    abortEarly?: boolean
+    eager?: boolean
   }
 ): any[]
 export declare function validate(
@@ -100,7 +100,7 @@ export declare function validate(
   options?: {
     dialect?: string,
     strict?: boolean,
-    abortEarly?: boolean
+    eager?: boolean
   }
 ): any
 

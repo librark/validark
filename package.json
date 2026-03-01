@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "type": "module",
   "scripts": {
-    "test": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' npx jest --coverage"
+    "test": "node --test --experimental-test-coverage --test-coverage-exclude='**/*.test.js' --test-coverage-exclude='**/__tests__/**' --test-coverage-exclude='**/*.d.ts'"
   },
   "repository": {
     "type": "git",
@@ -23,23 +23,7 @@
   "homepage": "https://github.com/knowark/validarkjs#readme",
   "standard": {
     "env": [
-      "jest"
+      "node"
     ]
-  },
-  "jest": {
-    "verbose": true,
-    "transform": {},
-    "clearMocks": true,
-    "coverageDirectory": "coverage",
-    "collectCoverageFrom": [
-      "**/lib/**"
-    ],
-    "coveragePathIgnorePatterns": [
-      ".d.ts",
-      "__tests__"
-    ]
-  },
-  "devDependencies": {
-    "jest": "^29.4.3"
   }
 }
